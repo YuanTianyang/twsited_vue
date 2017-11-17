@@ -9,74 +9,56 @@
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload">
-          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          <img v-if="userPhoto" :src="userPhoto" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
         <el-form-item label-width="300px" label="用户名称">
-          <el-input v-model="input" placeholder="请输入用户昵称"></el-input>
+          <el-input v-model="userName" placeholder="请输入用户昵称"></el-input>
         </el-form-item>
         <el-form-item label-width="300px" label="手机号">
-          <el-input v-model="input" placeholder="请输入手机号"></el-input>
+          <el-input v-model="userPhone" placeholder="请输入手机号"></el-input>
         </el-form-item>
         <el-form-item label-width="300px" label="所属公司">
-          <el-select v-model="value" filterable  placeholder="请选择">
+          <el-select v-model="value" placeholder="请选择">
             <el-option
-              v-for="item in companys"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              v-for="company in companys"
+              :key="company.value"
+              :label="company.label"
+              :value="company.value">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label-width="300px" label="性别">
-          <el-radio class="radio" v-model="radio" label="1">男</el-radio>
-          <el-radio class="radio" v-model="radio" label="2">女</el-radio>
-        </el-form-item>
-        <el-form-item label-width="300px" label="婚否">
-          <el-switch
-            v-model="isMarry"
-            on-text="已婚"
-            off-text="未婚"
-            on-color="#13ce66"
-            off-color="#ff4949">
-          </el-switch>
+          <el-radio class="radio" v-model="userGender" label="1">男</el-radio>
+          <el-radio class="radio" v-model="userGender" label="2">女</el-radio>
         </el-form-item>
         <el-form-item label-width="300px" label="生日">
           <el-date-picker
-            v-model="value1"
+            v-model="userBirthday"
             type="date"
             placeholder="选择日期"
             :picker-options="pickerOptions0">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label-width="300px" label="兴趣爱好">
-          <el-tag
-            :key="tag"
-            v-for="tag in dynamicTags"
-            :closable="true"
-            :close-transition="false"
-            @close="handleClose(tag)"
-          >
-            {{tag}}
-          </el-tag>
-          <el-input
-            class="input-new-tag"
-            v-if="inputVisible"
-            v-model="inputValue"
-            ref="saveTagInput"
-            size="mini"
-            @keyup.enter.native="handleInputConfirm"
-            @blur="handleInputConfirm"
-          >
-          </el-input>
-        </el-form-item>
         <el-form-item label-width="300px" label="身份证号">
-          <el-input v-model="input" placeholder="请输入身份证号"></el-input>
+          <el-input v-model="userIdentity" placeholder="请输入身份证号"></el-input>
         </el-form-item>
-        <el-form-item label-width="300px">
-          <el-button type="primary">确认</el-button>
-          <el-button>取消</el-button>
+        <el-form-item label-width="300px" label="帐号状态">
+          <el-switch
+            v-model="blackListState"
+            :width="73"
+            on-text="正常"
+            off-text="已禁用"
+            on-color="#13ce66"
+            off-color="#ff4949"
+            on-value="1"
+            off-value="2">
+          </el-switch>
+        </el-form-item>
+        <el-form-item  label-width="300px">
+          <el-button type="info" @click="createUser()">确认</el-button>
+          <el-button :plain="true" @click="getCompanies()">取消</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -88,42 +70,57 @@
     name: 'HelloWorld',
     data () {
       return {
-        radio: '1',
         pickerOptions0: {
           disabledDate (time) {
             return time.getTime() > Date.now() - 8.64e7
           }
         },
-        value1: '',
-        companys: [{
-          value: '1',
-          label: '滴滴'
-        }, {
-          value: '2',
-          label: '神州专车'
-        }, {
-          value: '3',
-          label: '易到用车'
-        }, {
-          value: '4',
-          label: '小咖出行'
-        }, {
-          value: '5',
-          label: '哒哒速运'
-        }],
         value: '',
-        isMarry: true,
-        dynamicTags: ['标签一', '标签二', '标签三'],
-        inputVisible: false,
-        inputValue: ''
-
+        userPhoto: '',
+        userName: '',
+        userPhone: '',
+        userGender: '1',
+        userBirthday: '',
+        userIdentity: '',
+        blackListState: '1',
+        company: ''
       }
     },
     computed: {
     },
     methods: {
+      createUser () {
+        let that = this
+        that.$http.post(
+          '/v1/user',
+          {
+            'name': that.userName,
+            'phone': that.userPhone,
+            'gender': that.userGender,
+            'birthday': that.userBirthday,
+            'identity': that.userIdentity,
+            'blacklist': that.blackListState
+          },
+          {
+            emulateJSON: true
+          }
+        ).then(response => {
+          console.log(response.json())
+        })
+      },
+      getCompanies () {
+        let that = this
+        that.$http.get(
+          'http://192.168.0.72:8080/api/v1/companyByAppKey',
+          {
+            'app_key': '1f462eb305a2417c9564f2dfaf89da9c'
+          }
+        ).then(response => {
+          console.log(response.json())
+        })
+      },
       handleAvatarSuccess (res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw)
+        this.userPhoto = URL.createObjectURL(file.raw)
       },
       beforeAvatarUpload (file) {
         const isJPG = file.type === 'image/jpeg'
@@ -136,23 +133,6 @@
           this.$message.error('上传头像图片大小不能超过 2MB!')
         }
         return isJPG && isLt2M
-      },
-      handleClose (tag) {
-        this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-      },
-      showInput () {
-        this.inputVisible = true
-        this.$nextTick(_ => {
-          this.$refs.saveTagInput.$refs.input.focus()
-        })
-      },
-      handleInputConfirm () {
-        let inputValue = this.inputValue
-        if (inputValue) {
-          this.dynamicTags.push(inputValue)
-        }
-        this.inputVisible = false
-        this.inputValue = ''
       }
     }
   }
