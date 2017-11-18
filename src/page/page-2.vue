@@ -20,12 +20,12 @@
           <el-input v-model="userPhone" placeholder="请输入手机号"></el-input>
         </el-form-item>
         <el-form-item label-width="300px" label="所属公司">
-          <el-select v-model="value" placeholder="请选择">
+          <el-select v-model="companyId" placeholder="请选择">
             <el-option
               v-for="company in companys"
-              :key="company.value"
-              :label="company.label"
-              :value="company.value">
+              :key="company.companyId"
+              :label="company.companyName"
+              :value="company.companyId">
             </el-option>
           </el-select>
         </el-form-item>
@@ -83,7 +83,23 @@
         userBirthday: '',
         userIdentity: '',
         blackListState: '1',
-        company: ''
+        companys: [{
+          companyId: 1,
+          companyName: '滴滴科技'
+        }, {
+          companyId: 2,
+          companyName: '易到用车'
+        }, {
+          companyId: 3,
+          companyName: '小咖出行'
+        }, {
+          companyId: 4,
+          companyName: '哒哒速运'
+        }, {
+          companyId: 5,
+          companyName: 'ofo'
+        }],
+        companyId: ''
       }
     },
     computed: {
@@ -91,11 +107,31 @@
     methods: {
       createUser () {
         let that = this
+        let ssss
+        that.companys.some(function (value, index, array) {
+          if (array[index].companyId === that.companyId) {
+            ssss = array[index].companyName
+            return true
+          }
+        })
+//        let allCompany = that.companys
+//        let myCompanyName
+//
+//        for (let i = 0; i < allCompany.length; i++) {
+//          alert(allCompany[i].companyId)
+//          if (allCompany[i].companyId === that.companyId) {
+//            myCompanyName = allCompany[i].companyName
+//            break
+//          }
+//        }
+
         that.$http.post(
           '/v1/user',
           {
             'name': that.userName,
             'phone': that.userPhone,
+            'companyId': that.companyId,
+            'companyName': ssss,
             'gender': that.userGender,
             'birthday': that.userBirthday,
             'identity': that.userIdentity,
@@ -119,6 +155,9 @@
           console.log(response.json())
         })
       },
+//      changeValue (value) {
+//
+//      },
       handleAvatarSuccess (res, file) {
         this.userPhoto = URL.createObjectURL(file.raw)
       },
