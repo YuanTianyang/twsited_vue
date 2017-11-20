@@ -56,7 +56,7 @@
       </el-form-item>
       <el-form-item  label-width="300px">
         <el-button type="info" @click="createUser()">确认</el-button>
-        <el-button :plain="true">取消</el-button>
+        <el-button :plain="true"  @click="getCompanies()">取消</el-button>
       </el-form-item>
     </el-form>
 </template>
@@ -122,6 +122,19 @@
             'birthday': that.userBirthday,
             'identity': that.userIdentity,
             'blacklist': that.blackListState
+          },
+          {
+            emulateJSON: true
+          }
+        ).then(response => {
+          console.log(response.json())
+        })
+      },
+      getCompanies () {
+        let that = this
+        that.$http.get(
+          '/v1/company/companiesByAppKey',
+          {
           },
           {
             emulateJSON: true
