@@ -172,11 +172,9 @@
             emulateJSON: true
           }
         ).then(response => {
-          let that = this
           let data = response.data
           if (data.code > 0) {
             let company = data.data
-            console.log(company)
             that.companyName = company.companyName
             that.address = company.address
             that.companyShortName = company.companyShortName
@@ -193,7 +191,7 @@
             that.logo = company.logo
             that.version = company.version
           } else {
-            alert('失败:' + data.msg)
+            alert('失败:' + data.message)
           }
         })
       }

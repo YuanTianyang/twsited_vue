@@ -48,31 +48,27 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(id => {
+        }).then(() => {
+          let params = {ids: id}
           that.$http.delete(
-            '/v1/company',
-            {
-              'id': id
-            },
-            {
-              emulateJSON: true
-            }
+            '/v1/company', {params}
           ).then(response => {
             let result = response.data
             if (result.code > 0) {
-              this.$message({
+              that.$message({
                 type: 'success',
-                message: result.msg
+                message: result.message
               })
+              that.getCompanies()
             } else {
-              this.$message({
+              that.$message({
                 type: 'error',
-                message: result.msg
+                message: result.message
               })
             }
           })
         }).catch(() => {
-          this.$message({
+          that.$message({
             type: 'info',
             message: '已取消删除'
           })
