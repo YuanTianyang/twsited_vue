@@ -193,7 +193,7 @@
         ).then(response => {
           let data = response.data
           if (data.code > 0) {
-            let user = data.data[0]
+            let user = data.data
             that.userPhoto = user.avatar
             that.userName = user.name
             that.userPhone = user.phone
