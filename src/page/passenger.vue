@@ -19,7 +19,6 @@
         </el-select>
 
         <el-button type="primary" icon="search">查询</el-button>
-
       </div>
     </div>
     <div style="text-align: left">
